@@ -148,7 +148,7 @@ const HomeScreen = () => {
       {/* Top Header Section */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={styles.iconButton} onPress={()=>router.push("profile/Notification")}>
             <Ionicons
               name="notifications-outline"
               size={24}
@@ -346,7 +346,7 @@ const HomeScreen = () => {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Specialties</Text>
             <TouchableOpacity
-              onPress={() => Alert.alert("Specialties", "See all specialties")}
+              onPress={() => router.push("Specialties/Specialties")}
             >
               <Text style={styles.seeAllText}>See all</Text>
             </TouchableOpacity>

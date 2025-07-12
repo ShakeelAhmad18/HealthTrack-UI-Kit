@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient
 import { COLORS } from "../../constants/helper"; // Adjust path
+import { useRoute } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -83,6 +84,7 @@ const OrthopedicsDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
+  const router=useRoute();
 
   const specialtyTitle = "Orthopedics";
 
@@ -107,10 +109,7 @@ const OrthopedicsDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Orthopedics doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

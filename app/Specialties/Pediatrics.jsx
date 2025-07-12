@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router";
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient
 import { COLORS } from "../../constants/helper"; // Adjust path
 
@@ -83,6 +83,7 @@ const PediatricsDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
+  const router=useRouter();
 
   const specialtyTitle = "Pediatrics";
 
@@ -107,10 +108,7 @@ const PediatricsDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Pediatrics doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

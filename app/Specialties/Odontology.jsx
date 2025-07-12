@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router";
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router";
 import { COLORS } from "../../constants/helper"; // Adjust path
 
 const { width } = Dimensions.get("window");
@@ -82,7 +82,7 @@ const OdontologyDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-
+  const router=useRouter();
   const specialtyTitle = "Odontology";
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,10 +106,7 @@ const OdontologyDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Odontology doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

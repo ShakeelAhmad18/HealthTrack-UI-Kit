@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router"; // For navigation and params
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router"; // For navigation and params
 import { COLORS } from "../../constants/helper"; // Adjust path as per your project structure
 
 const { width } = Dimensions.get("window");
@@ -82,6 +82,7 @@ const ALL_DERMATOLOGY_DOCTORS = [
 const DermatologyDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const router=useRouter();
   // We can still use useLocalSearchParams even if we hardcode "Dermatology"
   // This allows for future flexibility if you decide to pass it dynamically.
   const params = useLocalSearchParams();
@@ -112,10 +113,7 @@ const DermatologyDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Dermatology doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

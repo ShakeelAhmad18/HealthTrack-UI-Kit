@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router";
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router";
 // No LinearGradient import needed for this screen
 import { COLORS } from "../../constants/helper"; // Adjust path
 
@@ -83,7 +83,7 @@ const NeurologyDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-
+  const router=useRouter();
   const specialtyTitle = "Neurology";
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,10 +107,7 @@ const NeurologyDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Neurology doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

@@ -18,7 +18,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router"; // For navigation and params
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router"; // For navigation and params
 import { COLORS } from "../../constants/helper"; // Adjust path
 
 const { width } = Dimensions.get("window"); 
@@ -83,7 +83,7 @@ const CardiologyDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams(); 
-
+  const router=useRouter();
   const specialtyTitle = params.specialty || "Cardiology";
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +108,7 @@ const CardiologyDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert("Filter Options", "Advanced filtering coming soon!");
+    router.push("doctors/Filters")
   };
 
   const handleDoctorInfoPress = (doctor) => {

@@ -77,7 +77,7 @@ const TabLayout = () => {
       <Tabs.Screen
         name="calendar" // e.g., app/calendar.js
         options={{
-          title: "Calendar",
+          title: "Appointments",
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="calendar-outline"

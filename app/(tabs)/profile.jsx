@@ -188,7 +188,7 @@ const ProfileScreen = () => {
 
   // Handles navigation for Notification settings
   const handleNotificationPress = () => {
-    router.push("profile/Notification"); // Navigate to Notification settings screen
+    router.push("profile/NotificationSettings"); // Navigate to Notification settings screen
     setShowSettingsDropdown(false); // Close dropdown after navigation
   };
 

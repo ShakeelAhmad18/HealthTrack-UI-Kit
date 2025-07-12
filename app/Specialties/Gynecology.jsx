@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useLocalSearchParams } from "expo-router"; // For navigation and params
+import { useNavigation, useLocalSearchParams, useRouter } from "expo-router"; // For navigation and params
 import { COLORS } from "../../constants/helper"; // Adjust path as per your project structure
 
 const { width } = Dimensions.get("window");
@@ -82,7 +82,7 @@ const GynecologyDoctorsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-
+  const router=useRouter();
   // The specialty title for this specific screen
   const specialtyTitle = "Gynecology";
 
@@ -108,10 +108,7 @@ const GynecologyDoctorsScreen = () => {
   }, [searchQuery, sortOption]);
 
   const handleFilterPress = () => {
-    Alert.alert(
-      "Filter Options",
-      "Advanced filtering for Gynecology doctors coming soon!"
-    );
+    router.push("doctors/Filters");
   };
 
   const handleDoctorInfoPress = (doctor) => {

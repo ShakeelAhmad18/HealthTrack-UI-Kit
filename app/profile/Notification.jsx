@@ -1,4 +1,4 @@
-// app/notification-settings/index.js (or app/notification-settings-screen.js)
+// app/notifications/index.js (or app/notification-screen.js)
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -6,96 +6,163 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Switch,
+  TextInput,
+  ActivityIndicator,
+  FlatList, // More efficient for lists
   Alert,
-  ActivityIndicator, 
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "expo-router"; // Assuming you are using Expo Router
+import { useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../constants/helper"; // Adjust path as needed
 
-const NotificationSettingsScreen = () => {
+// Dummy Notification Data
+const DUMMY_NOTIFICATIONS = [
+  {
+    id: "n1",
+    type: "Scheduled Appointment",
+    icon: "calendar-check",
+    description:
+      "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    time: "2 M", // 2 minutes ago
+    date: "Today",
+    read: false,
+  },
+  {
+    id: "n2",
+    type: "Scheduled Change",
+    icon: "calendar-edit",
+    description:
+      "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    time: "2 H", // 2 hours ago
+    date: "Today",
+    read: false,
+  },
+  {
+    id: "n3",
+    type: "Medical Notes",
+    icon: "note-text",
+    description:
+      "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    time: "3 H", // 3 hours ago
+    date: "Today",
+    read: true,
+  },
+  {
+    id: "n4",
+    type: "Scheduled Appointment",
+    icon: "calendar-check",
+    description:
+      "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    time: "1 D", // 1 day ago
+    date: "Yesterday",
+    read: false,
+  },
+  {
+    id: "n5",
+    type: "Medical History Update",
+    icon: "clipboard-text",
+    description:
+      "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    time: "5 D", // 5 days ago
+    date: "15 April",
+    read: true,
+  },
+  {
+    id: "n6",
+    type: "Reminder",
+    icon: "bell-ring",
+    description: "Your annual check-up is due next week.",
+    time: "6 D",
+    date: "15 April",
+    read: false,
+  },
+];
+
+const NotificationScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  const [settings, setSettings] = useState({
-    generalNotification: true,
-    sound: true,
-    soundCall: true,
-    vibrate: false,
-    specialOffers: false,
-    payments: true,
-    promoAndDiscount: false,
-    cashback: true,
-  });
-  const [loading, setLoading] = useState(true); 
-  const [saving, setSaving] = useState(false); 
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Simulate fetching settings on component mount
   useEffect(() => {
-    const fetchSettings = async () => {
+    // Simulate fetching notifications from an API
+    const fetchNotifications = async () => {
       setLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        
+        setNotifications(DUMMY_NOTIFICATIONS); // Set dummy data
       } catch (error) {
-        console.error("Failed to fetch notification settings:", error);
-        Alert.alert("Error", "Could not load settings. Please try again.");
+        console.error("Failed to fetch notifications:", error);
+        Alert.alert("Error", "Could not load notifications. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchSettings();
+    fetchNotifications();
   }, []);
-
-  // Function to handle toggle changes and persist them
-  const toggleSwitch = async (settingKey) => {
-    const newSettings = {
-      ...settings,
-      [settingKey]: !settings[settingKey],
-    };
-    setSettings(newSettings); // Optimistically update UI
-
-    setSaving(true); // Indicate saving process
-    try {
-      // Simulate API call to save settings
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-    } catch (error) {
-      console.error(`Failed to save setting '${settingKey}':`, error);
-      Alert.alert(
-        "Error",
-        `Failed to save setting: ${
-          error.message || "Please check your connection."
-        }`
-      );
-      // Revert UI if save fails
-      setSettings((prev) => ({ ...prev, [settingKey]: !prev[settingKey] }));
-    } finally {
-      setSaving(false); // End saving process
-    }
-  };
 
   const handleBackPress = () => {
     navigation.goBack();
   };
 
-  // Render a single notification setting item
-  const NotificationItem = ({ label, settingKey }) => (
-    <View style={styles.settingItem}>
-      <Text style={styles.settingText}>{label}</Text>
-      <Switch
-        trackColor={{ false: COLORS.mediumGrey, true: COLORS.primary }}
-        thumbColor={COLORS.white}
-        ios_backgroundColor={COLORS.mediumGrey}
-        onValueChange={() => toggleSwitch(settingKey)}
-        value={settings[settingKey]}
-        disabled={saving} // Disable switch while another setting is saving
-      />
-    </View>
+  const handleMarkAllAsRead = () => {
+    Alert.alert(
+      "Mark All as Read",
+      "Are you sure you want to mark all notifications as read?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Mark All",
+          onPress: () => {
+            setNotifications(
+              notifications.map((notif) => ({ ...notif, read: true }))
+            );
+            Alert.alert("Success", "All notifications marked as read.");
+          },
+        },
+      ]
+    );
+  };
+
+  const handleNotificationPress = (id) => {
+    // Mark notification as read when pressed
+    setNotifications(
+      notifications.map((notif) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+    // In a real app, you would navigate to a detail screen for the notification
+    Alert.alert("Notification Details", `You tapped on notification ID: ${id}`);
+  };
+
+  // Group notifications by date for rendering
+  const groupedNotifications = notifications.reduce((acc, notification) => {
+    const date = notification.date;
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(notification);
+    return acc;
+  }, {});
+
+  // Filter notifications based on search query
+  const filteredGroupedNotifications = Object.keys(groupedNotifications).reduce(
+    (acc, date) => {
+      const filtered = groupedNotifications[date].filter(
+        (notif) =>
+          notif.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          notif.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (filtered.length > 0) {
+        acc[date] = filtered;
+      }
+      return acc;
+    },
+    {}
   );
 
   return (
@@ -114,16 +181,37 @@ const NotificationSettingsScreen = () => {
           >
             <Ionicons name="chevron-back" size={28} color={COLORS.white} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Notification Setting</Text>
+          <Text style={styles.headerTitle}>Notification</Text>
           <View style={{ width: 28 }} />
-          {/* Placeholder for right icon if needed, currently empty to balance back button */}
+        </View>
+
+        {/* Search Bar and Mark All */}
+        <View style={styles.searchAndMarkAllContainer}>
+          <View style={styles.searchBarWrapper}>
+            <Ionicons
+              name="search-outline"
+              size={20}
+              color={COLORS.iconSecondary}
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search..."
+              placeholderTextColor={COLORS.textPlaceholder}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+          <TouchableOpacity onPress={handleMarkAllAsRead}>
+            <Text style={styles.markAllText}>Mark all</Text>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
 
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Loading settings...</Text>
+          <Text style={styles.loadingText}>Loading notifications...</Text>
         </View>
       ) : (
         <ScrollView
@@ -133,41 +221,46 @@ const NotificationSettingsScreen = () => {
             { paddingBottom: insets.bottom + 20 },
           ]}
         >
-          {/* General Notification */}
-          <NotificationItem
-            label="General Notification"
-            settingKey="generalNotification"
-          />
-
-          {/* Sound */}
-          <NotificationItem label="Sound" settingKey="sound" />
-
-          {/* Sound Call */}
-          <NotificationItem label="Sound Call" settingKey="soundCall" />
-
-          {/* Vibrate */}
-          <NotificationItem label="Vibrate" settingKey="vibrate" />
-
-          {/* Special Offers */}
-          <NotificationItem label="Special Offers" settingKey="specialOffers" />
-
-          {/* Payments */}
-          <NotificationItem label="Payments" settingKey="payments" />
-
-          {/* Promo And Discount */}
-          <NotificationItem
-            label="Promo And Discount"
-            settingKey="promoAndDiscount"
-          />
-
-          {/* Cashback */}
-          <NotificationItem label="Cashback" settingKey="cashback" />
-
-          {saving && (
-            <View style={styles.savingIndicator}>
-              <ActivityIndicator size="small" color={COLORS.primary} />
-              <Text style={styles.savingText}>Saving...</Text>
-            </View>
+          {Object.keys(filteredGroupedNotifications).length > 0 ? (
+            Object.keys(filteredGroupedNotifications).map((date) => (
+              <View key={date}>
+                <View style={styles.dateHeaderContainer}>
+                  <Text style={styles.dateHeaderText}>{date}</Text>
+                </View>
+                {filteredGroupedNotifications[date].map((notif) => (
+                  <TouchableOpacity
+                    key={notif.id}
+                    style={[
+                      styles.notificationItem,
+                      !notif.read && styles.unreadNotification,
+                    ]}
+                    onPress={() => handleNotificationPress(notif.id)}
+                  >
+                    <View style={styles.notificationIconContainer}>
+                      <MaterialCommunityIcons
+                        name={notif.icon}
+                        size={24}
+                        color={COLORS.primary}
+                      />
+                    </View>
+                    <View style={styles.notificationContent}>
+                      <Text style={styles.notificationType}>{notif.type}</Text>
+                      <Text
+                        style={styles.notificationDescription}
+                        numberOfLines={2}
+                      >
+                        {notif.description}
+                      </Text>
+                    </View>
+                    <Text style={styles.notificationTime}>{notif.time}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noNotificationsText}>
+              No notifications found.
+            </Text>
           )}
         </ScrollView>
       )}
@@ -205,10 +298,46 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.white,
   },
+  searchAndMarkAllContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  searchBarWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    marginRight: 10,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: COLORS.textPrimary,
+  },
+  markAllText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.white,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    minHeight: 200,
   },
   loadingText: {
     marginTop: 10,
@@ -219,14 +348,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  settingItem: {
+  dateHeaderContainer: {
+    backgroundColor: COLORS.lightBackground, // A subtle background for date headers
+    borderRadius: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    marginBottom: 10,
+    alignSelf: "flex-start", // Fit content
+  },
+  dateHeaderText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: COLORS.textSecondary,
+  },
+  notificationItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: COLORS.white,
     borderRadius: 15,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    padding: 15,
     marginBottom: 10,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 1 },
@@ -234,23 +374,44 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1.5,
   },
-  settingText: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    flex: 1, // Allows text to take available space
+  unreadNotification: {
+    backgroundColor: COLORS.unreadBackground, // Slightly different background for unread
+    borderLeftWidth: 4, // Visual indicator for unread
+    borderLeftColor: COLORS.primary,
   },
-  savingIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
+  notificationIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.lightPrimary, // Light primary background for icon
     justifyContent: "center",
-    marginTop: 20,
-    marginBottom: 10,
+    alignItems: "center",
+    marginRight: 15,
   },
-  savingText: {
-    marginLeft: 10,
-    fontSize: 14,
+  notificationContent: {
+    flex: 1,
+    marginRight: 10,
+  },
+  notificationType: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
+    marginBottom: 4,
+  },
+  notificationDescription: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  notificationTime: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+  },
+  noNotificationsText: {
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 16,
     color: COLORS.textSecondary,
   },
 });
 
-export default NotificationSettingsScreen;
+export default NotificationScreen;
